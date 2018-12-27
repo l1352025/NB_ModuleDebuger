@@ -39,8 +39,8 @@ namespace NB_ModuleDebuger
             _thrTransceiver.Start();
 
             MultiLanguage.InitLanguage(this);
-            string title = LangDict.dictEN[Application.ProductName] + "_v" + Application.ProductVersion + "    " + LangDict.dictEN[Application.CompanyName];
-            LangDict.dictEN.Add(this.Text, title);
+            string title = LanguageDict.zh_CN_To_en_US[Application.ProductName] + "_v" + Application.ProductVersion + "    " + LanguageDict.zh_CN_To_en_US[Application.CompanyName];
+            LanguageDict.zh_CN_To_en_US.Add(this.Text, title);
             if (Thread.CurrentThread.CurrentCulture.Name.StartsWith("zh-", StringComparison.OrdinalIgnoreCase))
             {
                 combLanguage.SelectedIndex = 0;
@@ -97,8 +97,9 @@ namespace NB_ModuleDebuger
             }
         };
 
-        delegate void CallbackFunc();
+        delegate void CallbackFunc(params object[] args);
         private CallbackFunc _cmdEndCallback;
+        private object[] _argsEndCallback;
         private Command CurrentCmd = null;
         private string _strMsgBuf = "";
         private string _strMsgMain = "";
@@ -430,7 +431,7 @@ namespace NB_ModuleDebuger
 
                         if (_cmdEndCallback != null)
                         {
-                            _cmdEndCallback();
+                            _cmdEndCallback(_argsEndCallback);
                             _cmdEndCallback = null;
                         }
                     }
@@ -441,7 +442,7 @@ namespace NB_ModuleDebuger
                 {
                     cmd.RecvFunc(cmd);
 
-                    if (cmd.IsEnable == false && cmd.Name != "Idle状态")
+                    if (cmd.IsEnable == false)
                     {
                         if (_sendQueue.Count == 0)
                         {
@@ -476,7 +477,7 @@ namespace NB_ModuleDebuger
 
                             if (_cmdEndCallback != null)
                             {
-                                _cmdEndCallback();
+                                _cmdEndCallback(_argsEndCallback);
                                 _cmdEndCallback = null;
                             }
                         }
@@ -484,7 +485,7 @@ namespace NB_ModuleDebuger
                 }
 
                 // wait
-                Thread.Sleep(100);
+                Thread.Sleep(50);
 
                 timeWait = DateTime.Now - lastSendTime;
             }
@@ -588,6 +589,7 @@ namespace NB_ModuleDebuger
             if (oldname != Thread.CurrentThread.CurrentUICulture.Name)
             {
                 MultiLanguage.SetControlLanguageText(this);
+                ShowMsg("Language Switch To ：" + combLanguage.Text + "\r\n", Color.Green);
             }
         }
 
@@ -808,8 +810,8 @@ namespace NB_ModuleDebuger
         private string _objMsgId = "";          // OneNet设备对象通信Id
         private string _ackMsgId = "";          // OneNet应答消息Id
         private string _currBand = "";
-        private byte _localPort = 100;          // udp本地端口
-        private byte _currSocket;       
+        private Random _randomPort = new Random((int)(DateTime.Now.ToBinary()));    // 随机端口
+        private int _currSocket;       
         private string _serverIp = "";
         private string _listenPort = "";
 
@@ -944,13 +946,21 @@ namespace NB_ModuleDebuger
             if (_sendQueue.Count > 0) return;
 
             cmd = new Command();
+            cmd.Name = "查询入网状态";
+            cmd.SendFunc = SendCmd;
+            cmd.RecvFunc = RecvCmd;
+            cmd.TimeWaitMS = 1000;
+            cmd.RetryTimes = 1;
+            _sendQueue.Enqueue(cmd);
+
+            cmd = new Command();
             cmd.Name = "查询网络状态信息";
             cmd.SendFunc = SendCmd;
             cmd.RecvFunc = RecvCmd;
-            cmd.TimeWaitMS = 500;
+            cmd.TimeWaitMS = 1000;
             cmd.RetryTimes = 3;
-
             _sendQueue.Enqueue(cmd);
+
             _IsSendNewCmd = true;
         }
 
@@ -972,8 +982,6 @@ namespace NB_ModuleDebuger
                 txtPort.Visible = false;
                 txtDataUpload.Location = new System.Drawing.Point(32, 80);
                 btDataUpload.Location = new System.Drawing.Point(207, 80);
-
-                btChkRecv.Visible = false;
             }
             else if (combCloudSvr.Text.Contains("CDP"))
             {
@@ -985,9 +993,6 @@ namespace NB_ModuleDebuger
                 btDataUpload.Location = new System.Drawing.Point(207, 108);
                 txtIp.Text = XmlHelper.GetNodeDefValue(_configPath, "/Config/CdpSvrIp", "180.101.147.115");
                 txtPort.Text = XmlHelper.GetNodeDefValue(_configPath, "/Config/CdpSvrPort", "5683");
-
-                string strModelType = XmlHelper.GetNodeDefValue(_configPath, "/Config/Model", "NH01A");
-                btChkRecv.Visible = (strModelType == "NR01A" ? true : false);
             }
             else if (combCloudSvr.Text.Contains("UDP"))
             {
@@ -999,8 +1004,6 @@ namespace NB_ModuleDebuger
                 btDataUpload.Location = new System.Drawing.Point(207, 108);
                 txtIp.Text = XmlHelper.GetNodeDefValue(_configPath, "/Config/UdpSvrIp", "47.98.243.161");
                 txtPort.Text = XmlHelper.GetNodeDefValue(_configPath, "/Config/UdpSvrPort", "17728");
-
-                btChkRecv.Visible = true;
             }
 
             if (GetDefaultLang(combCloudSvr.Text) != XmlHelper.GetNodeValue(_configPath, "/Config/CloudSvrName"))
@@ -1132,6 +1135,7 @@ namespace NB_ModuleDebuger
                 }
                 else if (strCloudSvr == "UDP服务器")
                 {
+                    
                     cmd = new Command();
                     cmd.Name = "创建通信Socket";
                     cmd.SendFunc = SendCmd;
@@ -1139,7 +1143,7 @@ namespace NB_ModuleDebuger
                     cmd.TimeWaitMS = 1000;
                     cmd.RetryTimes = 3;
                     cmd.Params.Add("连接平台");
-                    cmd.Params.Add("\"DGRAM\",17," + _localPort + ",1");
+                    cmd.Params.Add("\"DGRAM\",17," + _randomPort.Next(40000, 60000) + ",1");
                     _sendQueue.Enqueue(cmd);
                 }
                 else if (strCloudSvr == "OneNet平台")
@@ -1274,7 +1278,7 @@ namespace NB_ModuleDebuger
                     cmd.TimeWaitMS = 1000;
                     cmd.RetryTimes = 3;
                     cmd.Params.Add("连接平台");
-                    cmd.Params.Add("DGRAM,17," + _localPort + ",1,AF_INET");
+                    cmd.Params.Add("DGRAM,17," + _randomPort.Next(40000, 60000) + ",1,AF_INET");
                     _sendQueue.Enqueue(cmd);
                 }
                 else // 其他平台
@@ -1305,19 +1309,13 @@ namespace NB_ModuleDebuger
 
             if (_sendQueue.Count > 0) return;
 
+            string msg = txtDataUpload.Text.Trim();
+            byte[] buf = Encoding.Default.GetBytes(msg);        // GB2312
+            msg = Util.GetStringHexFromByte(buf, 0, buf.Length);
+
             if (combCloudSvr.Text.Contains("CDP"))
             {
-                string msg = txtDataUpload.Text.Trim();
-
-                if (msg.IndexOf(",") < 0)
-                {
-                    if (msg.Length % 2 == 1)
-                    {
-                        msg = msg.Substring(0, msg.Length - 1) + "0" + msg.Substring(msg.Length - 1);
-                    }
-                    txtDataUpload.Text = msg;
-                    msg = (msg.Length / 2).ToString() + "," + msg;
-                }
+                string param = buf.Length + "," + msg;
 
                 cmd = new Command();
                 cmd.Name = "发送数据";
@@ -1326,15 +1324,12 @@ namespace NB_ModuleDebuger
                 cmd.TimeWaitMS = 2000;
                 cmd.RetryTimes = 3;
                 cmd.Params.Add("数据上传");
-                cmd.Params.Add(msg);
+                cmd.Params.Add(param);
                 _sendQueue.Enqueue(cmd);
             }
             else if (combCloudSvr.Text.Contains("UDP"))
             {
-                string param = txtDataUpload.Text.Trim();
-                byte[] buf = Encoding.Default.GetBytes(param);
-                param = Util.GetStringHexFromByte(buf, 0, buf.Length);
-                param = _currSocket + ",\"" + _serverIp + "\"," + _listenPort + "," + buf.Length + "," + param + "";
+                string param = _currSocket + ",\"" + _serverIp + "\"," + _listenPort + "," + buf.Length + "," + msg + "";
 
                 cmd = new Command();
                 cmd.Name = "发送UDP数据";
@@ -1348,8 +1343,8 @@ namespace NB_ModuleDebuger
             }
             else if (combCloudSvr.Text.Contains("OneNet"))
             {
-                string msg = txtDataUpload.Text.Trim();
-                msg = ",3306,0,5750,1," + msg.Length + ",\"" + msg + "\",0,0";
+                msg = txtDataUpload.Text.Trim();
+                string param = ",3306,0,5750,1," + msg.Length + ",\"" + msg + "\",0,0";
 
                 cmd = new Command();
                 cmd.Name = "上报对象资源";
@@ -1365,58 +1360,73 @@ namespace NB_ModuleDebuger
             _IsSendNewCmd = true;
         }
 
-        // 接收数据
-        private void btChkRecv_Click(object sender, EventArgs e)
-        {
-            if (false == _IsCloudConnected)
-            {
-                ShowMsg(GetCurrentLang("请连接平台后再接收") + " \r\n\r\n", Color.Red);
-                return;
-            }
-
-            RecvSocketData();
-        }
-        private void RecvSocketData()
+        /// <summary>
+        /// 接收数据
+        /// </summary>
+        /// <param name="args"> args[0] - "TCP,UDP,TCP/UDP,CDP", args[1] - socket num, args[2] - length </param>
+        private void RecvSocketData(params object[] args)
         {
             Command cmd = null;
 
+            if (args.Length != 3) return;
+
             if (_sendQueue.Count > 0) return;
+
+            string server = (string)args[0];
+            int socket = (int)args[1];
+            int length = (int)args[2];
+
+            length = (length <= 0 ? 512 : length);
 
             string strModelType = XmlHelper.GetNodeDefValue(_configPath, "/Config/Model", "NH01A");
 
-            if (combCloudSvr.Text.Contains("CDP") && strModelType == "NR01A")
+            if (strModelType == "NH01A")
             {
-                cmd = new Command();
-                cmd.Name = "查看接收缓存";
-                cmd.SendFunc = SendCmd;
-                cmd.RecvFunc = RecvCmd;
-                cmd.TimeWaitMS = 1000;
-                cmd.RetryTimes = 3;
-                cmd.Params.Add("查看接收缓存");
-                _sendQueue.Enqueue(cmd);
+                if (server.Contains("UDP"))
+                {
+                    cmd = new Command();
+                    cmd.Name = "接收Socket数据";
+                    cmd.SendFunc = SendCmd;
+                    cmd.RecvFunc = RecvCmd;
+                    cmd.TimeWaitMS = 1000;
+                    cmd.RetryTimes = 1;
+                    cmd.Params.Add("");
+                    cmd.Params.Add(socket + "," + length);
+                    _sendQueue.Enqueue(cmd);
+                }
             }
-            else if (combCloudSvr.Text.Contains("UDP"))
+            else if (strModelType == "NR01A")
             {
-                cmd = new Command();
-                cmd.Name = "接收Socket数据";
-                cmd.SendFunc = SendCmd;
-                cmd.RecvFunc = RecvCmd;
-                cmd.TimeWaitMS = 1000;
-                cmd.RetryTimes = 3;
-                cmd.Params.Add("查看接收缓存");
-                cmd.Params.Add(_currSocket + ",512");
-                _sendQueue.Enqueue(cmd);
-            }
-            else if (combCloudSvr.Text.Contains("OneNet"))
-            {
-                
+                if (server.Contains("CDP"))
+                {
+                    cmd = new Command();
+                    cmd.Name = "查看接收缓存";
+                    cmd.SendFunc = SendCmd;
+                    cmd.RecvFunc = RecvCmd;
+                    cmd.TimeWaitMS = 1000;
+                    cmd.RetryTimes = 1;
+                    _sendQueue.Enqueue(cmd);
+                }
+                else if (server.Contains("UDP"))
+                {
+                    cmd = new Command();
+                    cmd.Name = "接收Socket数据";
+                    cmd.SendFunc = SendCmd;
+                    cmd.RecvFunc = RecvCmd;
+                    cmd.TimeWaitMS = 5000;
+                    cmd.RetryTimes = 1;
+                    cmd.Params.Add("");
+                    cmd.Params.Add(socket + "," + length + ",5");
+                    _sendQueue.Enqueue(cmd);
+                }
+               
             }
 
             _IsSendNewCmd = true;
         }
         
         // 断开连接
-        private void DisCnctSvr()
+        private void DisCnctSvr(params object[] args)
         {
             Command cmd;
 
@@ -1425,7 +1435,7 @@ namespace NB_ModuleDebuger
             UpdateCnctStatus("未连接");
 
             string strModelType = XmlHelper.GetNodeDefValue(_configPath, "/Config/Model", "NH01A");
-            string strCloudSvrName = XmlHelper.GetNodeDefValue(_configPath, "/Config/CloudSvrName", "NH01A");
+            string strCloudSvrName = XmlHelper.GetNodeDefValue(_configPath, "/Config/CloudSvrName", "");
 
             if (strModelType == "NR01A")
             {
@@ -1688,7 +1698,67 @@ namespace NB_ModuleDebuger
                 case "Idle状态":
                     if (msg.Contains("+NNMI:"))
                     {
-                        strVal = GetCurrentLang("收到数据") + "：" + msg.Substring(msg.IndexOf(",") + 1);
+                        // NR01A CDP msg recved
+                        index = msg.IndexOf("+NNMI:");
+                        strLen = msg.IndexOf("\r\n", index + 6) - (index + 6);
+                        string[] strs = msg.Substring((index + 6), strLen).Trim().Split(',');
+                        if (strs.Length != 2)
+                        {
+                            return;
+                        }
+
+                        string strData = "";
+                        try
+                        {
+                            strData = Encoding.Default.GetString(Util.GetByteFromStringHex(strs[1]));
+                            strData = "(Str) " + strData;
+                        }
+                        catch (Exception)
+                        {
+                            strData = "(Hex) " + strs[1];
+                        }
+                        strVal += GetCurrentLang("收到数据") + "：" + GetCurrentLang("长度") + " " + strs[0] + " , " + GetCurrentLang("数据") + strData + "\r\n";
+                    
+                    }
+                    else if (msg.Contains("+NSONMI:"))  
+                    {
+                        // NH01A socket msg recved
+                        index = msg.IndexOf("+NSONMI:");
+                        strLen = msg.IndexOf("\r\n", index + 8) - (index + 8);
+                        string[] strs = msg.Substring((index + 8), strLen).Trim().Split(',');
+                        if (strs.Length != 2)
+                        {
+                            return;
+                        }
+
+                        _cmdEndCallback = RecvSocketData;
+                        _argsEndCallback = new object[] { "TCP/UDP", Convert.ToInt32(strs[0]), Convert.ToInt32(strs[1]) };
+
+                    }
+                    else if ( !msg.StartsWith("\r\n") && msg.EndsWith("\r\n"))      
+                    {
+                        // NR01A socket msg recved
+                        foreach (string item in msg.Trim().Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+                        {
+                            string[] strs = item.Trim().Split(',');
+                            if (strs.Length != 5)
+                            {
+                                continue;
+                            }
+
+                            string strData = "";
+                            try
+                            {
+                                strData = Encoding.Default.GetString(Util.GetByteFromStringHex(strs[4]));
+                                strData = "(Str) " + strData;
+                            }
+                            catch (Exception)
+                            {
+                                strData = "(Hex) " + strs[4];
+                            }
+                            strVal += GetCurrentLang("收到数据") + "：socket " + strs[0] + " - " + GetCurrentLang("远程地址") + " " + strs[1] + ":" + strs[2] + "\r\n";
+                            strVal += "\t\t\t" + GetCurrentLang("长度") + " " + strs[3] + " , " + GetCurrentLang("数据") + strData + "\r\n";
+                        }
                     }
                     _strMsgMain = strVal;
                     break;
@@ -1740,6 +1810,11 @@ namespace NB_ModuleDebuger
                         cmd.IsEnable = false;
                         _IsSendNewCmd = true;
 
+                        if (cmd.Params[0] != "连接平台")
+                        {
+                            return;
+                        }
+
                         if ((index = cmd.Params[2].IndexOf("\r\n")) >= 0)
                         {
                             strLen = cmd.Params[2].IndexOf("OK", index + 2) - (index + 2);
@@ -1762,24 +1837,50 @@ namespace NB_ModuleDebuger
                         cmd.IsEnable = false;
                         _IsSendNewCmd = true;
                     }
-                    else if (msg.Contains("AT+NSONMI:"))
-                    {
-                        RecvSocketData();
-                    }
                     break;
                 case "接收Socket数据":
                     if (msg.Contains("OK"))
                     {
                         cmd.IsEnable = false;
                         _IsSendNewCmd = true;
-                        // todo
+
+                        strLen = cmd.Params[2].IndexOf("OK");
+                        string[] strs = cmd.Params[2].Substring(0, strLen).Trim().Split(',');
+                        if(strs.Length == 6)
+                        {
+                            string strData = "";
+                            try
+                            {
+                                strData = Encoding.Default.GetString(Util.GetByteFromStringHex(strs[4]));
+                                strData = "(Str) " + strData;
+                            }
+                            catch(Exception)
+                            {
+                                strData = "(Hex) " + strs[4];
+                            }
+                            strVal = GetCurrentLang("收到数据") + "：socket " + strs[0] + " - " + GetCurrentLang("远程地址") + " " + strs[1] + ":" + strs[2] + "\r\n";
+                            strVal += "\t\t\t" + GetCurrentLang("长度") + " " + strs[3] + " , " + GetCurrentLang("数据") + strData + "\r\n";
+                            strVal += "\t\t\t" + GetCurrentLang("剩余缓存数据") + " " + strs[5] + "\r\n";
+
+                            if(strs[5] != "0")
+                            {
+                                _cmdEndCallback = RecvSocketData;
+                                _argsEndCallback = new object[] { "TCP/UDP", Convert.ToInt32(strs[0]), Convert.ToInt32(strs[5]) };
+                            }
+                        }
                     }
+                    _strMsgMain = strVal;
                     break;
                 case "关闭通信Socket":
                     if (msg.Contains("OK"))
                     {
                         cmd.IsEnable = false;
                         _IsSendNewCmd = true;
+
+                        if (cmd.Params[0] != "断开连接")
+                        {
+                            return;
+                        }
                         _currSocket = 0;
                     }
                     break;
@@ -1871,10 +1972,6 @@ namespace NB_ModuleDebuger
                         cmd.RetryTimes = 0; 
                         UpdateCnctStatus("未连接");
                     }
-                    else if (msg.Contains("+NNMI:"))
-                    {
-                        strVal = GetCurrentLang("收到应答") + "：" + msg.Substring(msg.IndexOf(",") + 1);
-                    }
                     _strMsgMain = strVal;
                     break;
 
@@ -1887,11 +1984,19 @@ namespace NB_ModuleDebuger
                     break;
 
                 case "查询入网状态":
-                    if (msg.Contains("+CGATT:1"))
+                    if (msg.Contains("OK"))
                     {
                         cmd.IsEnable = false;
                         _IsSendNewCmd = true;
-                        UpdateNetStatus("在线");
+
+                        if (msg.Contains("+CGATT:1"))
+                        {
+                            UpdateNetStatus("在线");
+                        }
+                        else if (msg.Contains("+CGATT:0"))
+                        {
+                            UpdateNetStatus("离线");
+                        }
                     }
                     break;
 
@@ -2201,7 +2306,6 @@ namespace NB_ModuleDebuger
             btCnctSvr.BackColor = Color.DarkKhaki;
             btDataUpload.BackColor = Color.DarkKhaki;
             btSend.BackColor = Color.DarkKhaki;
-            btChkRecv.BackColor = Color.DarkKhaki;
         }
         private void UiOperateDisable(string msg = "")
         {
@@ -2235,7 +2339,6 @@ namespace NB_ModuleDebuger
             btCnctSvr.BackColor = Color.Silver;
             btDataUpload.BackColor = Color.Silver;
             btSend.BackColor = Color.Silver;
-            btChkRecv.BackColor = Color.Silver;
         }
 
         private void UpdateNetStatus(string msg)

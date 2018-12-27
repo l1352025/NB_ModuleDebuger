@@ -43,7 +43,6 @@
             this.txtDataUpload = new System.Windows.Forms.TextBox();
             this.lbNetState = new System.Windows.Forms.Label();
             this.btQryNwkStat = new System.Windows.Forms.Button();
-            this.btChkRecv = new System.Windows.Forms.Button();
             this.btCnctSvr = new System.Windows.Forms.Button();
             this.btDataUpload = new System.Windows.Forms.Button();
             this.btJoinNwk = new System.Windows.Forms.Button();
@@ -143,7 +142,6 @@
             this.grpNwk.Controls.Add(this.txtDataUpload);
             this.grpNwk.Controls.Add(this.lbNetState);
             this.grpNwk.Controls.Add(this.btQryNwkStat);
-            this.grpNwk.Controls.Add(this.btChkRecv);
             this.grpNwk.Controls.Add(this.btCnctSvr);
             this.grpNwk.Controls.Add(this.btDataUpload);
             this.grpNwk.Controls.Add(this.btJoinNwk);
@@ -248,22 +246,9 @@
             this.btQryNwkStat.Name = "btQryNwkStat";
             this.btQryNwkStat.Size = new System.Drawing.Size(109, 23);
             this.btQryNwkStat.TabIndex = 1;
-            this.btQryNwkStat.Text = "网络状态信息";
+            this.btQryNwkStat.Text = "查询网络状态";
             this.btQryNwkStat.UseVisualStyleBackColor = false;
             this.btQryNwkStat.Click += new System.EventHandler(this.btQryNwkStat_Click);
-            // 
-            // btChkRecv
-            // 
-            this.btChkRecv.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btChkRecv.BackColor = System.Drawing.Color.DarkKhaki;
-            this.btChkRecv.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btChkRecv.Location = new System.Drawing.Point(161, 155);
-            this.btChkRecv.Name = "btChkRecv";
-            this.btChkRecv.Size = new System.Drawing.Size(98, 23);
-            this.btChkRecv.TabIndex = 1;
-            this.btChkRecv.Text = "查看接收缓存";
-            this.btChkRecv.UseVisualStyleBackColor = false;
-            this.btChkRecv.Click += new System.EventHandler(this.btChkRecv_Click);
             // 
             // btCnctSvr
             // 
@@ -735,7 +720,6 @@
         private System.Windows.Forms.Label lbPort;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox txtPort;
-        private System.Windows.Forms.Button btChkRecv;
         private System.Windows.Forms.Label lbLang;
         private System.Windows.Forms.ComboBox combLanguage;
         private System.Windows.Forms.Label lbCmdStatus;
