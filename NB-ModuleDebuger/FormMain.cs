@@ -953,6 +953,21 @@ namespace NB_ModuleDebuger
             cmd.RetryTimes = 1;
             _sendQueue.Enqueue(cmd);
 
+            string strModelType = XmlHelper.GetNodeDefValue(_configPath, "/Config/Model", "NH01A");
+
+            if (strModelType == "NR01A"
+                && false == GetDefaultLang(lbNetState.Text).Contains("离线"))
+            {
+                cmd = new Command();
+                cmd.Name = "激活PDP上下文";
+                cmd.SendFunc = SendCmd;
+                cmd.RecvFunc = RecvCmd;
+                cmd.TimeWaitMS = 500;
+                cmd.RetryTimes = 3;
+                cmd.Params.Add("入网");
+                _sendQueue.Enqueue(cmd);
+            }
+
             cmd = new Command();
             cmd.Name = "查询网络状态信息";
             cmd.SendFunc = SendCmd;
@@ -1310,8 +1325,21 @@ namespace NB_ModuleDebuger
             if (_sendQueue.Count > 0) return;
 
             string msg = txtDataUpload.Text.Trim();
-            byte[] buf = Encoding.Default.GetBytes(msg);        // GB2312
-            msg = Util.GetStringHexFromByte(buf, 0, buf.Length);
+            byte[] buf;
+            if (chkHex.Checked)
+            {
+                buf = Util.GetByteFromStringHex(msg);
+                if(buf == null)
+                {
+                    ShowMsg("输入的数据不是Hex格式\r\n", Color.Red);
+                    return;
+                }
+            }
+            else
+            {
+                buf = Encoding.Default.GetBytes(msg);        // GB2312
+                msg = Util.GetStringHexFromByte(buf, 0, buf.Length);
+            }
 
             if (combCloudSvr.Text.Contains("CDP"))
             {

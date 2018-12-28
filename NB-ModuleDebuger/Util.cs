@@ -16,30 +16,37 @@ namespace ElectricPowerDebuger.Common
         {
             byte tmp;
             int iLoop;
-            byte[] bytes;
+            byte[] bytes = null;
 
-            if (strSeparate == "")
+            try
             {
-                strSource = strSource.Trim();
-            }
-            else
-            {
-                strSource = strSource.Trim().Replace(strSeparate, "");
-            }
-            bytes = new byte[strSource.Length / 2];
+                if (strSeparate == "")
+                {
+                    strSource = strSource.Trim();
+                }
+                else
+                {
+                    strSource = strSource.Trim().Replace(strSeparate, "");
+                }
+                bytes = new byte[strSource.Length / 2];
 
-            for (iLoop = 0; iLoop < bytes.Length; iLoop++)
-            {
-                bytes[iLoop] = Convert.ToByte(strSource.Substring(iLoop * 2, 2), 16);
-            }
-            if (true == bReverse)
-            {
                 for (iLoop = 0; iLoop < bytes.Length; iLoop++)
                 {
-                    tmp = bytes[iLoop];
-                    bytes[iLoop] = bytes[bytes.Length - 1 - iLoop];
-                    bytes[bytes.Length - 1 - iLoop] = tmp;
+                    bytes[iLoop] = Convert.ToByte(strSource.Substring(iLoop * 2, 2), 16);
                 }
+                if (true == bReverse)
+                {
+                    for (iLoop = 0; iLoop < bytes.Length; iLoop++)
+                    {
+                        tmp = bytes[iLoop];
+                        bytes[iLoop] = bytes[bytes.Length - 1 - iLoop];
+                        bytes[bytes.Length - 1 - iLoop] = tmp;
+                    }
+                }
+            }
+            catch(Exception)
+            {
+                bytes = null;
             }
 
             return bytes;

@@ -75,6 +75,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.btSend = new System.Windows.Forms.Button();
             this.combAtCmd = new System.Windows.Forms.ComboBox();
+            this.chkHex = new System.Windows.Forms.CheckBox();
             this.grpPort.SuspendLayout();
             this.grpNwk.SuspendLayout();
             this.grpMsg.SuspendLayout();
@@ -133,6 +134,7 @@
             this.grpNwk.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.grpNwk.BackColor = System.Drawing.SystemColors.Control;
+            this.grpNwk.Controls.Add(this.chkHex);
             this.grpNwk.Controls.Add(this.lbPort);
             this.grpNwk.Controls.Add(this.label6);
             this.grpNwk.Controls.Add(this.lbIp);
@@ -148,7 +150,7 @@
             this.grpNwk.Font = new System.Drawing.Font("微软雅黑", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.grpNwk.Location = new System.Drawing.Point(9, 348);
             this.grpNwk.Name = "grpNwk";
-            this.grpNwk.Size = new System.Drawing.Size(272, 181);
+            this.grpNwk.Size = new System.Drawing.Size(272, 203);
             this.grpNwk.TabIndex = 0;
             this.grpNwk.TabStop = false;
             this.grpNwk.Text = "网络连接";
@@ -224,7 +226,7 @@
             this.txtDataUpload.Location = new System.Drawing.Point(32, 108);
             this.txtDataUpload.Multiline = true;
             this.txtDataUpload.Name = "txtDataUpload";
-            this.txtDataUpload.Size = new System.Drawing.Size(169, 41);
+            this.txtDataUpload.Size = new System.Drawing.Size(169, 64);
             this.txtDataUpload.TabIndex = 3;
             // 
             // lbNetState
@@ -232,7 +234,7 @@
             this.lbNetState.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lbNetState.AutoSize = true;
             this.lbNetState.BackColor = System.Drawing.Color.Silver;
-            this.lbNetState.Location = new System.Drawing.Point(3, 158);
+            this.lbNetState.Location = new System.Drawing.Point(3, 180);
             this.lbNetState.Name = "lbNetState";
             this.lbNetState.Size = new System.Drawing.Size(107, 20);
             this.lbNetState.TabIndex = 2;
@@ -303,7 +305,7 @@
             this.grpMsg.Controls.Add(this.btClear);
             this.grpMsg.Location = new System.Drawing.Point(287, 12);
             this.grpMsg.Name = "grpMsg";
-            this.grpMsg.Size = new System.Drawing.Size(650, 486);
+            this.grpMsg.Size = new System.Drawing.Size(650, 508);
             this.grpMsg.TabIndex = 0;
             this.grpMsg.TabStop = false;
             this.grpMsg.Text = "通信记录";
@@ -313,7 +315,7 @@
             this.lbCmdStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lbCmdStatus.BackColor = System.Drawing.Color.GreenYellow;
             this.lbCmdStatus.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.lbCmdStatus.Location = new System.Drawing.Point(5, 436);
+            this.lbCmdStatus.Location = new System.Drawing.Point(5, 458);
             this.lbCmdStatus.Name = "lbCmdStatus";
             this.lbCmdStatus.Size = new System.Drawing.Size(644, 25);
             this.lbCmdStatus.TabIndex = 3;
@@ -336,7 +338,7 @@
             this.chkShowRxData.AutoSize = true;
             this.chkShowRxData.Checked = true;
             this.chkShowRxData.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkShowRxData.Location = new System.Drawing.Point(276, 469);
+            this.chkShowRxData.Location = new System.Drawing.Point(276, 491);
             this.chkShowRxData.Name = "chkShowRxData";
             this.chkShowRxData.Size = new System.Drawing.Size(72, 16);
             this.chkShowRxData.TabIndex = 2;
@@ -350,7 +352,7 @@
             this.chkTime.AutoSize = true;
             this.chkTime.Checked = true;
             this.chkTime.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkTime.Location = new System.Drawing.Point(185, 469);
+            this.chkTime.Location = new System.Drawing.Point(185, 491);
             this.chkTime.Name = "chkTime";
             this.chkTime.Size = new System.Drawing.Size(72, 16);
             this.chkTime.TabIndex = 2;
@@ -365,7 +367,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.rTxtMsg.Location = new System.Drawing.Point(3, 17);
             this.rTxtMsg.Name = "rTxtMsg";
-            this.rTxtMsg.Size = new System.Drawing.Size(647, 444);
+            this.rTxtMsg.Size = new System.Drawing.Size(647, 466);
             this.rTxtMsg.TabIndex = 0;
             this.rTxtMsg.Text = "";
             // 
@@ -385,7 +387,7 @@
             // btSendEsc
             // 
             this.btSendEsc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btSendEsc.Location = new System.Drawing.Point(488, 465);
+            this.btSendEsc.Location = new System.Drawing.Point(488, 487);
             this.btSendEsc.Name = "btSendEsc";
             this.btSendEsc.Size = new System.Drawing.Size(76, 20);
             this.btSendEsc.TabIndex = 1;
@@ -396,7 +398,7 @@
             // btSendCtrlZ
             // 
             this.btSendCtrlZ.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btSendCtrlZ.Location = new System.Drawing.Point(389, 465);
+            this.btSendCtrlZ.Location = new System.Drawing.Point(389, 487);
             this.btSendCtrlZ.Name = "btSendCtrlZ";
             this.btSendCtrlZ.Size = new System.Drawing.Size(93, 20);
             this.btSendCtrlZ.TabIndex = 1;
@@ -407,7 +409,7 @@
             // btSave
             // 
             this.btSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btSave.Location = new System.Drawing.Point(93, 466);
+            this.btSave.Location = new System.Drawing.Point(93, 488);
             this.btSave.Name = "btSave";
             this.btSave.Size = new System.Drawing.Size(70, 20);
             this.btSave.TabIndex = 1;
@@ -418,7 +420,7 @@
             // btClear
             // 
             this.btClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btClear.Location = new System.Drawing.Point(4, 466);
+            this.btClear.Location = new System.Drawing.Point(4, 488);
             this.btClear.Name = "btClear";
             this.btClear.Size = new System.Drawing.Size(70, 20);
             this.btClear.TabIndex = 1;
@@ -615,7 +617,7 @@
             this.label2.AutoSize = true;
             this.label2.BackColor = System.Drawing.SystemColors.Control;
             this.label2.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label2.Location = new System.Drawing.Point(288, 509);
+            this.label2.Location = new System.Drawing.Point(288, 531);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(79, 17);
             this.label2.TabIndex = 2;
@@ -626,7 +628,7 @@
             this.btSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btSend.BackColor = System.Drawing.Color.DarkKhaki;
             this.btSend.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btSend.Location = new System.Drawing.Point(857, 504);
+            this.btSend.Location = new System.Drawing.Point(857, 526);
             this.btSend.Name = "btSend";
             this.btSend.Size = new System.Drawing.Size(80, 25);
             this.btSend.TabIndex = 4;
@@ -638,10 +640,20 @@
             // 
             this.combAtCmd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.combAtCmd.FormattingEnabled = true;
-            this.combAtCmd.Location = new System.Drawing.Point(380, 506);
+            this.combAtCmd.Location = new System.Drawing.Point(380, 528);
             this.combAtCmd.Name = "combAtCmd";
             this.combAtCmd.Size = new System.Drawing.Size(471, 20);
             this.combAtCmd.TabIndex = 4;
+            // 
+            // chkHex
+            // 
+            this.chkHex.AutoSize = true;
+            this.chkHex.Location = new System.Drawing.Point(207, 152);
+            this.chkHex.Name = "chkHex";
+            this.chkHex.Size = new System.Drawing.Size(54, 24);
+            this.chkHex.TabIndex = 7;
+            this.chkHex.Text = "Hex";
+            this.chkHex.UseVisualStyleBackColor = true;
             // 
             // FormMain
             // 
@@ -649,7 +661,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(949, 542);
+            this.ClientSize = new System.Drawing.Size(949, 564);
             this.Controls.Add(this.combAtCmd);
             this.Controls.Add(this.btSend);
             this.Controls.Add(this.label2);
@@ -726,6 +738,7 @@
         private System.Windows.Forms.Button btSendEsc;
         private System.Windows.Forms.Button btSendCtrlZ;
         private System.Windows.Forms.ComboBox combAtCmd;
+        private System.Windows.Forms.CheckBox chkHex;
     }
 }
 
