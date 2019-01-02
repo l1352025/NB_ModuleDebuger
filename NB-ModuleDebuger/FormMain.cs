@@ -2269,7 +2269,7 @@ namespace NB_ModuleDebuger
                 sw.WriteLine(rTxtMsg.Text.Replace("\n", "\r\n"));
             }
 
-            ShowMsg("保存档案成功！\r\n\r\n", Color.Green);
+            ShowMsg(GetCurrentLang("保存成功") + " ！\r\n\r\n", Color.Green);
         }
 
         private void chkTime_CheckedChanged(object sender, EventArgs e)
@@ -2289,16 +2289,7 @@ namespace NB_ModuleDebuger
         }
         #endregion
 
-        #region 窗口关闭处理、UI更新
-        private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            _thrTransceiver.Abort();
-            if(_scom.IsOpen)
-            {
-                _scom.Close();
-            }
-        }
-
+        #region UI更新
         delegate void UpdateUi(string msg);
         private void UiOperateEnable(string msg = "")
         {
@@ -2415,5 +2406,15 @@ namespace NB_ModuleDebuger
         }
         #endregion
 
+        #region 窗口关闭
+        private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            _thrTransceiver.Abort();
+            if (_scom.IsOpen)
+            {
+                _scom.Close();
+            }
+        }
+        #endregion
     }
 }

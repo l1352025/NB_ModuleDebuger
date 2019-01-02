@@ -76,6 +76,7 @@ namespace ElectricPowerDebuger.Common
             {"请至少选择一个Band值进行设置",     "Please choose at least one Band to set"},
             {"成功",                             "Success"},
             {"失败",                             "Failed"},
+            {"保存成功",                         "Saved Success" },
 
             // 接收解析
             {"收到数据",                "Received Data"},
