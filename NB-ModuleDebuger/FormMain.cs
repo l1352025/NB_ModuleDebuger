@@ -121,6 +121,7 @@ namespace NB_ModuleDebuger
             "查询网络状态信息   AT+NUESTATS                                  ",
 
             // 信息查询
+            "查询模组型号       AT+SRMTYPE                                   ",
             "查询版本号         AT+CGMR                                      ",
             "查询IMEI           AT+CGSN=1                                    ",
             "查询SIM卡ID        AT+CIMI                                      ",
@@ -161,6 +162,7 @@ namespace NB_ModuleDebuger
             "查询网络状态信息   AT+TUESTATS=\"ALL\"                          ",
 
             // 信息查询
+            "查询模组型号       AT+SRMTYPE                                   ",
             "查询软件版本       AT+CGMR                                      ",
             "查询硬件版本       AT+SRHWVER                                   ",
             "查询IMEI           AT+CGSN=1                                    ",
@@ -532,28 +534,14 @@ namespace NB_ModuleDebuger
 
             string strModelType = XmlHelper.GetNodeDefValue(_configPath, "/Config/Model", "NH01A");
 
-            if (strModelType == "NR01A")
-            {
-                cmd = new Command();
-                cmd.Name = "查询软件版本";
-                cmd.SendFunc = SendCmd;
-                cmd.RecvFunc = RecvCmd;
-                cmd.TimeWaitMS = 500;
-                cmd.RetryTimes = 3;
-                cmd.Params.Add("模组检测");
-                _sendQueue.Enqueue(cmd);
-            }
-            else
-            {
-                cmd = new Command();
-                cmd.Name = "查询版本号";
-                cmd.SendFunc = SendCmd;
-                cmd.RecvFunc = RecvCmd;
-                cmd.TimeWaitMS = 500;
-                cmd.RetryTimes = 3;
-                cmd.Params.Add("模组检测");
-                _sendQueue.Enqueue(cmd);
-            }
+            cmd = new Command();
+            cmd.Name = "查询模组型号";
+            cmd.SendFunc = SendCmd;
+            cmd.RecvFunc = RecvCmd;
+            cmd.TimeWaitMS = 500;
+            cmd.RetryTimes = 3;
+            cmd.Params.Add("模组检测");
+            _sendQueue.Enqueue(cmd);
 
             cmd = new Command();
             cmd.Name = "查询BAND";
@@ -2045,6 +2033,30 @@ namespace NB_ModuleDebuger
                         _strMsgMain = strVal;
                     }
                     break;
+
+                case "查询模组型号":
+                    if (msg.Contains("OK"))
+                    {
+                        cmd.IsEnable = false;
+                        _IsSendNewCmd = true;
+
+                        if ((index = cmd.Params[2].IndexOf("+MTYPE:")) >= 0)
+                        {
+                            strLen = cmd.Params[2].IndexOf("\r\n", index + 7) - (index + 7);
+                            strVal = cmd.Params[2].Substring((index + 7), strLen);
+                        }
+                        else if ((index = cmd.Params[2].IndexOf("+SRMTYPE\r\n\r\n")) >= 0)
+                        {
+                            strLen = cmd.Params[2].IndexOf("\r\n", index + 12) - (index + 12);
+                            strVal = cmd.Params[2].Substring((index + 12), strLen);
+                        }
+
+                        strVal = GetCurrentLang("模组型号") + "：" + strVal;
+
+                        _strMsgMain = strVal;
+                    }
+                    break;
+
                 case "查询版本号":
                     if (msg.Contains("OK"))
                     {

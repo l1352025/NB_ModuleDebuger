@@ -79,6 +79,7 @@ namespace ElectricPowerDebuger.Common
             {"保存成功",                         "Saved Success" },
 
             // 接收解析
+            {"模组型号",                "Module Model"},
             {"收到数据",                "Received Data"},
             {"远程地址",                "Remote Address"},
             {"长度",                    "Length"},
