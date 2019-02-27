@@ -25,8 +25,11 @@ namespace NB_ModuleDebuger
 
         public FormMain()
         {
+            
             InitializeComponent();
-            this.Text = Application.ProductName + "_v" + Application.ProductVersion + "    " + Application.CompanyName;
+            string strVer = Application.ProductVersion;
+
+            this.Text = Application.ProductName + "_v" + strVer + "    " + Application.CompanyName;
             _configPath = Application.ExecutablePath.Substring(0, Application.ExecutablePath.Length - 4) + ".cfg";
 
             _scom = new SerialCom();
@@ -39,7 +42,7 @@ namespace NB_ModuleDebuger
             _thrTransceiver.Start();
 
             MultiLanguage.InitLanguage(this);
-            string title = LanguageDict.zh_CN_To_en_US[Application.ProductName] + "_v" + Application.ProductVersion + "    " + LanguageDict.zh_CN_To_en_US[Application.CompanyName];
+            string title = LanguageDict.zh_CN_To_en_US[Application.ProductName] + "_v" + strVer + "    " + LanguageDict.zh_CN_To_en_US[Application.CompanyName];
             LanguageDict.zh_CN_To_en_US.Add(this.Text, title);
             if (Thread.CurrentThread.CurrentCulture.Name.StartsWith("zh-", StringComparison.OrdinalIgnoreCase))
             {
@@ -457,11 +460,7 @@ namespace NB_ModuleDebuger
                                 {
                                     UpdateCnctStatus("已连接");
                                 }
-                                else if (cmd.Params[0] == "入网")
-                                {
-                                    UpdateNetStatus("在线");
-                                }
-                                
+
                             }
                             else if (_strMsgMain != "")
                             {
@@ -939,6 +938,7 @@ namespace NB_ModuleDebuger
             cmd.RecvFunc = RecvCmd;
             cmd.TimeWaitMS = 1000;
             cmd.RetryTimes = 1;
+            cmd.Params.Add("查询网络状态");
             _sendQueue.Enqueue(cmd);
 
             string strModelType = XmlHelper.GetNodeDefValue(_configPath, "/Config/Model", "NH01A");
@@ -952,7 +952,7 @@ namespace NB_ModuleDebuger
                 cmd.RecvFunc = RecvCmd;
                 cmd.TimeWaitMS = 500;
                 cmd.RetryTimes = 3;
-                cmd.Params.Add("入网");
+                cmd.Params.Add("查询网络状态");
                 _sendQueue.Enqueue(cmd);
             }
 
@@ -962,6 +962,7 @@ namespace NB_ModuleDebuger
             cmd.RecvFunc = RecvCmd;
             cmd.TimeWaitMS = 1000;
             cmd.RetryTimes = 3;
+            cmd.Params.Add("查询网络状态");
             _sendQueue.Enqueue(cmd);
 
             _IsSendNewCmd = true;
@@ -1016,7 +1017,7 @@ namespace NB_ModuleDebuger
             }
         }
 
-        // 建立连接
+        // 建立/断开 连接
         private void btCnctSvr_Click(object sender, EventArgs e)
         {
             Command cmd;
@@ -1204,6 +1205,7 @@ namespace NB_ModuleDebuger
             {
                 if (strCloudSvr == "CDP服务器")
                 {
+                    /*
                     cmd = new Command();
                     cmd.Name = "关闭SIM卡";
                     cmd.SendFunc = SendCmd;
@@ -1225,6 +1227,7 @@ namespace NB_ModuleDebuger
                         cmd.Params.Add("3,5,8");
                         _sendQueue.Enqueue(cmd);
                     }
+                     * */
 
                     cmd = new Command();
                     cmd.Name = "设置COAP协议IP";
@@ -1359,7 +1362,7 @@ namespace NB_ModuleDebuger
             }
             else if (combCloudSvr.Text.Contains("OneNet"))
             {
-                msg = txtDataUpload.Text.Trim();
+                msg = txtDataUpload.Text.Trim();  
                 string param = ",3306,0,5750,1," + msg.Length + ",\"" + msg + "\",0,0";
 
                 cmd = new Command();
@@ -1369,7 +1372,7 @@ namespace NB_ModuleDebuger
                 cmd.TimeWaitMS = 3000;
                 cmd.RetryTimes = 3;
                 cmd.Params.Add("数据上传");
-                cmd.Params.Add(msg);
+                cmd.Params.Add(param);
                 _sendQueue.Enqueue(cmd);
             }
 
@@ -1503,6 +1506,7 @@ namespace NB_ModuleDebuger
             {
                 if (strCloudSvrName == "CDP服务器")
                 {
+                    /*
                     cmd = new Command();
                     cmd.Name = "关闭SIM卡";
                     cmd.SendFunc = SendCmd;
@@ -1511,6 +1515,7 @@ namespace NB_ModuleDebuger
                     cmd.RetryTimes = 3;
                     cmd.Params.Add("断开连接");
                     _sendQueue.Enqueue(cmd);
+                     * */
                 }
                 else if (strCloudSvrName == "UDP服务器")
                 {
@@ -2002,11 +2007,16 @@ namespace NB_ModuleDebuger
                 case "查询入网状态":
                     if (msg.Contains("OK"))
                     {
-                        cmd.IsEnable = false;
-                        _IsSendNewCmd = true;
+                        if (cmd.Params[0] == "查询网络状态")
+                        {
+                            cmd.IsEnable = false;
+                            _IsSendNewCmd = true;
+                        }
 
                         if (msg.Contains("+CGATT:1"))
                         {
+                            cmd.IsEnable = false;
+                            _IsSendNewCmd = true;
                             UpdateNetStatus("在线");
                         }
                         else if (msg.Contains("+CGATT:0"))

@@ -34,6 +34,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.combPortNum = new System.Windows.Forms.ComboBox();
             this.grpNwk = new System.Windows.Forms.GroupBox();
+            this.chkHex = new System.Windows.Forms.CheckBox();
             this.lbPort = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.lbIp = new System.Windows.Forms.Label();
@@ -75,7 +76,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.btSend = new System.Windows.Forms.Button();
             this.combAtCmd = new System.Windows.Forms.ComboBox();
-            this.chkHex = new System.Windows.Forms.CheckBox();
             this.grpPort.SuspendLayout();
             this.grpNwk.SuspendLayout();
             this.grpMsg.SuspendLayout();
@@ -154,6 +154,16 @@
             this.grpNwk.TabIndex = 0;
             this.grpNwk.TabStop = false;
             this.grpNwk.Text = "网络连接";
+            // 
+            // chkHex
+            // 
+            this.chkHex.AutoSize = true;
+            this.chkHex.Location = new System.Drawing.Point(207, 152);
+            this.chkHex.Name = "chkHex";
+            this.chkHex.Size = new System.Drawing.Size(54, 24);
+            this.chkHex.TabIndex = 7;
+            this.chkHex.Text = "Hex";
+            this.chkHex.UseVisualStyleBackColor = true;
             // 
             // lbPort
             // 
@@ -644,16 +654,6 @@
             this.combAtCmd.Name = "combAtCmd";
             this.combAtCmd.Size = new System.Drawing.Size(471, 20);
             this.combAtCmd.TabIndex = 4;
-            // 
-            // chkHex
-            // 
-            this.chkHex.AutoSize = true;
-            this.chkHex.Location = new System.Drawing.Point(207, 152);
-            this.chkHex.Name = "chkHex";
-            this.chkHex.Size = new System.Drawing.Size(54, 24);
-            this.chkHex.TabIndex = 7;
-            this.chkHex.Text = "Hex";
-            this.chkHex.UseVisualStyleBackColor = true;
             // 
             // FormMain
             // 
