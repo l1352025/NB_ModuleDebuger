@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("NB模组调试软件")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("上海桑锐电子科技股份有限公司")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("NB模组调试软件")]
-[assembly: AssemblyCopyright("Copyright © 上海桑锐电子科技股份有限公司 2018")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

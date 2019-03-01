@@ -28,8 +28,9 @@ namespace NB_ModuleDebuger
             
             InitializeComponent();
             string strVer = Application.ProductVersion;
+            strVer += "_Special";  // v1.8_Special版
 
-            this.Text = Application.ProductName + "_v" + strVer + "    " + Application.CompanyName;
+            this.Text = Application.ProductName + "_v" + strVer; // v1.8_Special版 屏蔽公司信息
             _configPath = Application.ExecutablePath.Substring(0, Application.ExecutablePath.Length - 4) + ".cfg";
 
             _scom = new SerialCom();
@@ -42,7 +43,7 @@ namespace NB_ModuleDebuger
             _thrTransceiver.Start();
 
             MultiLanguage.InitLanguage(this);
-            string title = LanguageDict.zh_CN_To_en_US[Application.ProductName] + "_v" + strVer + "    " + LanguageDict.zh_CN_To_en_US[Application.CompanyName];
+            string title = LanguageDict.zh_CN_To_en_US[Application.ProductName] + "_v" + strVer;
             LanguageDict.zh_CN_To_en_US.Add(this.Text, title);
             if (Thread.CurrentThread.CurrentCulture.Name.StartsWith("zh-", StringComparison.OrdinalIgnoreCase))
             {
@@ -510,14 +511,14 @@ namespace NB_ModuleDebuger
             {
                 combCloudSvr.Items.Clear();
                 combCloudSvr.Items.Add("CDP服务器");
-                combCloudSvr.Items.Add("UDP服务器");
+                //combCloudSvr.Items.Add("UDP服务器");  // v1.8_Special版 屏蔽Udp选项
                 btQryTempVbat.Visible = true;
             }
             else
             {
                 combCloudSvr.Items.Clear();
                 combCloudSvr.Items.Add("CDP服务器");
-                combCloudSvr.Items.Add("UDP服务器");
+                //combCloudSvr.Items.Add("UDP服务器");
                 combCloudSvr.Items.Add("OneNet平台");
                 btQryTempVbat.Visible = false;
             }
