@@ -127,7 +127,8 @@ namespace NB_ModuleDebuger
             "查询模组型号       AT+SRMTYPE                                   ",
             "查询版本号         AT+CGMR                                      ",
             "查询IMEI           AT+CGSN=1                                    ",
-            "查询SIM卡ID        AT+CIMI                                      ",
+            "查询SIM卡IMSI      AT+CIMI                                      ",
+            "查询SIM卡CCID      AT+NCCID?                                    ",
             "查询制造商         AT+CGMI                                      ",
             "查询COAP协议IP     AT+NCDP?                                     ",
             "查询BAND           AT+NBAND?                                    ",
@@ -169,7 +170,8 @@ namespace NB_ModuleDebuger
             "查询软件版本       AT+CGMR                                      ",
             "查询硬件版本       AT+SRHWVER                                   ",
             "查询IMEI           AT+CGSN=1                                    ",
-            "查询SIM卡ID        AT+CIMI                                      ",
+            "查询SIM卡IMSI      AT+CIMI                                      ",
+            "查询SIM卡CCID      AT+CCID                                      ",
             "查询信号质量       AT+CSQ                                       ",
             "查询制造商         AT+CGMI                                      ",
             "查询COAP协议IP     AT+NCDP?                                     ",
@@ -393,7 +395,11 @@ namespace NB_ModuleDebuger
                         _IsSendNewCmd = true;
                         enableUI = true;
 
-                        if(cmd.Params[0] != "")
+                        if (cmd.Params[0] == "自定义AT指令")
+                        {
+                            // show nothing
+                        }
+                        else if (cmd.Params[0] != "")
                         {
                             msg = GetCurrentLang(cmd.Params[0]) + GetCurrentLang("失败");
 
@@ -405,7 +411,7 @@ namespace NB_ModuleDebuger
                             }
                             ShowMsg(msg + "\r\n\r\n", Color.Red);
                         }
-                        else if (cmd.Params.Count < 4 || cmd.Params[3] != "自定义")
+                        else
                         {
                             msg = GetCurrentLang(cmd.Name) + GetCurrentLang("失败");
                             ShowMsg(msg + "\r\n\r\n", Color.Red);
@@ -673,7 +679,7 @@ namespace NB_ModuleDebuger
             if (_sendQueue.Count > 0) return;
 
             cmd = new Command();
-            cmd.Name = "查询SIM卡ID";
+            cmd.Name = "查询SIM卡IMSI";
             cmd.SendFunc = SendCmd;
             cmd.RecvFunc = RecvCmd;
             cmd.TimeWaitMS = 500;
@@ -682,6 +688,24 @@ namespace NB_ModuleDebuger
 
             _IsSendNewCmd = true;
         }
+
+        private void btQrySimCcid_Click(object sender, EventArgs e)
+        {
+            Command cmd;
+
+            if (_sendQueue.Count > 0) return;
+
+            cmd = new Command();
+            cmd.Name = "查询SIM卡CCID";
+            cmd.SendFunc = SendCmd;
+            cmd.RecvFunc = RecvCmd;
+            cmd.TimeWaitMS = 500;
+            cmd.RetryTimes = 3;
+            _sendQueue.Enqueue(cmd);
+
+            _IsSendNewCmd = true;
+        }
+
         private void btQryTempVbat_Click(object sender, EventArgs e)
         {
             Command cmd;
@@ -824,7 +848,7 @@ namespace NB_ModuleDebuger
                 cmd.RecvFunc = RecvCmd;
                 cmd.TimeWaitMS = 3000;
                 cmd.RetryTimes = 3;
-                cmd.Params.Add("连接平台");
+                cmd.Params.Add("入网");
                 _sendQueue.Enqueue(cmd);
 
                 cmd = new Command();
@@ -860,7 +884,7 @@ namespace NB_ModuleDebuger
                 cmd.Name = "模组复位";
                 cmd.SendFunc = SendCmd;
                 cmd.RecvFunc = RecvCmd;
-                cmd.TimeWaitMS = 15000;
+                cmd.TimeWaitMS = 20000;
                 cmd.RetryTimes = 1;
                 cmd.Params.Add("入网");
                 _sendQueue.Enqueue(cmd);
@@ -869,7 +893,7 @@ namespace NB_ModuleDebuger
                 cmd.Name = "模组配置";
                 cmd.SendFunc = SendCmd;
                 cmd.RecvFunc = RecvCmd;
-                cmd.TimeWaitMS = 1000;
+                cmd.TimeWaitMS = 3000;
                 cmd.RetryTimes = 3;
                 cmd.Params.Add("入网");
                 _sendQueue.Enqueue(cmd);
@@ -878,7 +902,7 @@ namespace NB_ModuleDebuger
                 cmd.Name = "模组配置1";
                 cmd.SendFunc = SendCmd;
                 cmd.RecvFunc = RecvCmd;
-                cmd.TimeWaitMS = 1000;
+                cmd.TimeWaitMS = 3000;
                 cmd.RetryTimes = 3;
                 cmd.Params.Add("入网");
                 _sendQueue.Enqueue(cmd);
@@ -887,7 +911,7 @@ namespace NB_ModuleDebuger
                 cmd.Name = "模组配置2";
                 cmd.SendFunc = SendCmd;
                 cmd.RecvFunc = RecvCmd;
-                cmd.TimeWaitMS = 1000;
+                cmd.TimeWaitMS = 3000;
                 cmd.RetryTimes = 3;
                 cmd.Params.Add("入网");
                 _sendQueue.Enqueue(cmd);
@@ -1578,10 +1602,9 @@ namespace NB_ModuleDebuger
             cmd.RecvFunc = RecvCmd;
             cmd.TimeWaitMS = 2000;
             cmd.RetryTimes = 1;
-            cmd.Params.Add("");
+            cmd.Params.Add("自定义AT指令");
             cmd.Params.Add(strAtCmd);
             cmd.Params.Add("");
-            cmd.Params.Add("自定义AT指令");
             _sendQueue.Enqueue(cmd);
 
             _IsSendNewCmd = true;
@@ -1606,7 +1629,10 @@ namespace NB_ModuleDebuger
                 AT_CmdTbl = AT_CmdTbl_NH01A;
             }
 
-            while (cmd.Params.Count < 3)    //Params0 - cmdName, Params1 - cmdParam, Params2 - cmdRecvMsg
+            // Params[0] - cmdGrpName
+            // Params[1] - cmdParam
+            // Params[2] - cmdRecvMsg
+            while (cmd.Params.Count < 3)    
             {
                 cmd.Params.Add("");
             }
@@ -2146,7 +2172,7 @@ namespace NB_ModuleDebuger
                         _strMsgMain = strVal;
                     }
                     break;
-                case "查询SIM卡ID":
+                case "查询SIM卡IMSI":
                     if (msg.Contains("OK"))
                     {
                         cmd.IsEnable = false;
@@ -2156,12 +2182,29 @@ namespace NB_ModuleDebuger
                         if ((index = cmd.Params[2].IndexOf("\r\n")) >= 0)
                         {
                             strLen = cmd.Params[2].IndexOf("\r\n", index + 2) - (index + 2);
-                            strVal = GetCurrentLang("SIM卡ID") + "：" + cmd.Params[2].Substring((index + 2), strLen);
+                            strVal = GetCurrentLang("SIM卡IMSI") + "：" + cmd.Params[2].Substring((index + 2), strLen);
                         }
 
                         _strMsgMain = strVal;
                     }
                     break;
+
+                case "查询SIM卡CCID":
+                    if (msg.Contains("OK"))
+                    {
+                        cmd.IsEnable = false;
+                        _IsSendNewCmd = true;
+
+                        if ((index = cmd.Params[2].IndexOf("CCID:")) >= 0)
+                        {
+                            strLen = cmd.Params[2].IndexOf("\r\n", index + 5) - (index + 5);
+                            strVal = GetCurrentLang("SIM卡CCID") + "：" + cmd.Params[2].Substring((index + 5), strLen);
+                        }
+
+                        _strMsgMain = strVal;
+                    }
+                    break;
+
                 case "查询BAND":
                     if (msg.Contains("OK"))
                     {
@@ -2339,6 +2382,7 @@ namespace NB_ModuleDebuger
             btQryBand.BackColor = Color.DarkKhaki;
             btQryIMEI.BackColor = Color.DarkKhaki;
             btQrySimId.BackColor = Color.DarkKhaki;
+            btQrySimCcid.BackColor = Color.DarkKhaki;
             btQryVer.BackColor = Color.DarkKhaki;
             btQryTempVbat.BackColor = Color.DarkKhaki;
             btSetBand.BackColor = Color.DarkKhaki;
@@ -2372,6 +2416,7 @@ namespace NB_ModuleDebuger
             btQryBand.BackColor = Color.Silver;
             btQryIMEI.BackColor = Color.Silver;
             btQrySimId.BackColor = Color.Silver;
+            btQrySimCcid.BackColor = Color.Silver;
             btQryVer.BackColor = Color.Silver;
             btQryTempVbat.BackColor = Color.Silver;
             btSetBand.BackColor = Color.Silver;
@@ -2438,5 +2483,6 @@ namespace NB_ModuleDebuger
             }
         }
         #endregion
+
     }
 }

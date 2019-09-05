@@ -76,6 +76,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.btSend = new System.Windows.Forms.Button();
             this.combAtCmd = new System.Windows.Forms.ComboBox();
+            this.btQrySimCcid = new System.Windows.Forms.Button();
             this.grpPort.SuspendLayout();
             this.grpNwk.SuspendLayout();
             this.grpMsg.SuspendLayout();
@@ -476,6 +477,7 @@
             // grpQuery
             // 
             this.grpQuery.BackColor = System.Drawing.SystemColors.Control;
+            this.grpQuery.Controls.Add(this.btQrySimCcid);
             this.grpQuery.Controls.Add(this.btQrySimId);
             this.grpQuery.Controls.Add(this.btQryTempVbat);
             this.grpQuery.Controls.Add(this.btQryBand);
@@ -497,7 +499,7 @@
             this.btQrySimId.Name = "btQrySimId";
             this.btQrySimId.Size = new System.Drawing.Size(109, 23);
             this.btQrySimId.TabIndex = 2;
-            this.btQrySimId.Text = "SIM卡ID";
+            this.btQrySimId.Text = "SIM卡IMSI";
             this.btQrySimId.UseVisualStyleBackColor = false;
             this.btQrySimId.Click += new System.EventHandler(this.btQrySimId_Click);
             // 
@@ -655,6 +657,18 @@
             this.combAtCmd.Size = new System.Drawing.Size(471, 20);
             this.combAtCmd.TabIndex = 4;
             // 
+            // btQrySimCcid
+            // 
+            this.btQrySimCcid.BackColor = System.Drawing.Color.DarkKhaki;
+            this.btQrySimCcid.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btQrySimCcid.Location = new System.Drawing.Point(150, 89);
+            this.btQrySimCcid.Name = "btQrySimCcid";
+            this.btQrySimCcid.Size = new System.Drawing.Size(109, 23);
+            this.btQrySimCcid.TabIndex = 2;
+            this.btQrySimCcid.Text = "SIM卡CCID";
+            this.btQrySimCcid.UseVisualStyleBackColor = false;
+            this.btQrySimCcid.Click += new System.EventHandler(this.btQrySimCcid_Click);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -739,6 +753,7 @@
         private System.Windows.Forms.Button btSendCtrlZ;
         private System.Windows.Forms.ComboBox combAtCmd;
         private System.Windows.Forms.CheckBox chkHex;
+        private System.Windows.Forms.Button btQrySimCcid;
     }
 }
 
